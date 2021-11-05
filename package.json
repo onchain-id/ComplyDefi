@@ -1,0 +1,72 @@
+{
+  "name": "@tokenysolutions/complydefi",
+  "version": "0.1.0",
+  "description": "A compliance module for DeFi.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "files": [
+    "build",
+    "contracts",
+    "index.js",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "build": "truffle compile && truffle-flattener contracts/gooseComply/GooseComply.sol > build/GooseComply.sol && truffle-flattener contracts/factory/IdFactory.sol > build/IdFactory.sol && truffle-flattener contracts/gooseFinance/EggToken.sol > build/EggToken.sol",
+    "coverage": "truffle run coverage",
+    "test": "truffle test",
+    "lint:js": "eslint \"test/*.js\"",
+    "lint:js-fix": "eslint \"test/*.js\" --fix",
+    "lint": "npm run lint:sol",
+    "lint:sol": "solhint \"contracts/*.sol\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TokenySolutions/ComplyDefi.git"
+  },
+  "author": "Tokeny Solutions",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/TokenySolutions/ComplyDefi/issues"
+  },
+  "homepage": "https://github.com/TokenySolutions/ComplyDefi#README",
+  "devDependencies": {
+    "@commitlint/cli": "^12.1.4",
+    "@openzeppelin/contracts": "^4.2.0",
+    "@onchain-id/solidity": "^1.4.0",
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^7.29.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-chai-friendly": "^0.7.1",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-security": "^1.4.0",
+    "eth-gas-reporter": "^0.2.22",
+    "ganache-cli": "^6.12.2",
+    "husky": "^7.0.0",
+    "lint-staged": "^11.0.0",
+    "prettier": "^2.3.2",
+    "prettier-plugin-solidity": "^1.0.0-beta.13",
+    "@openzeppelin/contracts-upgradeable": "^4.1.0",
+    "solhint": "^3.3.6",
+    "solidity-coverage": "^0.7.17",
+    "solidity-docgen": "^0.5.13",
+    "truffle": "^5.4.8",
+    "truffle-flattener": "^1.5.0",
+    "web3": "^1.5.2"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "node ./scripts/commit-msg.js $HUSKY_GIT_PARAMS && commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint"
+    ]
+  }
+}
