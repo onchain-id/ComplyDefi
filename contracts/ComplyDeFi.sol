@@ -10,7 +10,7 @@ import '@onchain-id/solidity/contracts/interface/IClaimIssuer.sol';
 
 contract ComplyDeFi is IComplyDeFi, Ownable {
 
-    /// address of the identity contracts factory
+    /// address of the ONCHAINID Factory contract
     address public factory;
     /// ONCHAINID linked to the complyDeFi contract
     address public complyDeFiID;
@@ -22,46 +22,73 @@ contract ComplyDeFi is IComplyDeFi, Ownable {
 
 
 
+    // modifier checking the compliance status of the wallet calling the transaction
+    // this modifier has to be put on each function that requires a compliance check
     modifier onlyComply() {
         require(isComply(msg.sender), 'ComplyDeFi : caller not compliant');
         _;
     }
 
+    /**
+     *  @dev Constructor of the ComplyDeFi contract
+     *  insert this constructor in the constructor of your DeFi app inheriting ComplyDeFi
+     *  @param _factory the address of the ONCHAINID factory
+     *  @param _id the address of the ONCHAINID of the DeFi protocol implementing ComplyDeFi
+     */
     constructor (address _factory, address _id) {
         factory = _factory;
         complyDeFiID = _id;
     }
 
+    /**
+     *  @dev See {IComplyDeFi-setFactory}.
+     */
     function setFactory(address _factory) external override onlyOwner {
         factory = _factory;
         emit FactorySet(_factory);
     }
 
-    function isTrustedIssuer(address _wallet) public view override returns (bool){
-        if (trustedIssuerClaims[_wallet].length > 0) {
+    /**
+     *  @dev See {IComplyDeFi-isTrustedIssuer}.
+     */
+    function isTrustedIssuer(address _issuer) public view override returns (bool){
+        if (trustedIssuerClaims[_issuer].length > 0) {
             return true;
         }
         return false;
     }
 
+    /**
+     *  @dev See {IComplyDeFi-addTrustedIssuer}.
+     */
     function addTrustedIssuer(address _issuer, uint[] memory _claimTopics) external override onlyOwner {
         require(!isTrustedIssuer(_issuer), "issuer already exists");
         trustedIssuerClaims[_issuer] = _claimTopics;
         emit TrustedIssuerAdded(_issuer, _claimTopics);
     }
 
+    /**
+     *  @dev See {IComplyDeFi-removeTrustedIssuer}.
+     */
     function removeTrustedIssuer(address _issuer) external override onlyOwner {
         require(isTrustedIssuer(_issuer), "issuer doesn't exists");
         delete trustedIssuerClaims[_issuer];
         emit TrustedIssuerRemoved(_issuer);
     }
 
+    /**
+     *  @dev See {IComplyDeFi-updateIssuerTopics}.
+     */
     function updateIssuerTopics(address _issuer, uint[] memory _claimTopics) external override onlyOwner {
         require(isTrustedIssuer(_issuer), "issuer doesn't exists");
+        require(_claimTopics.length > 0 , "claim set cannot be empty");
         trustedIssuerClaims[_issuer] = _claimTopics;
         emit TrustedIssuerUpdated(_issuer, _claimTopics);
     }
 
+    /**
+     *  @dev See {IComplyDeFi-isClaimRequired}.
+     */
     function isClaimRequired(uint _claim) public view override returns (bool) {
         uint length = requiredClaims.length;
         for (uint i = 0; i < length; i++) {
@@ -72,12 +99,18 @@ contract ComplyDeFi is IComplyDeFi, Ownable {
         return false;
     }
 
+    /**
+     *  @dev See {IComplyDeFi-addRequiredClaim}.
+     */
     function addRequiredClaim(uint _claim) external override onlyOwner {
         require(!isClaimRequired(_claim), "claim already in the list of required claims");
         requiredClaims.push(_claim);
         emit ClaimRequired(_claim);
     }
 
+    /**
+     *  @dev See {IComplyDeFi-removeRequiredClaim}.
+     */
     function removeRequiredClaim(uint _claim) external override onlyOwner {
         require(isClaimRequired(_claim), "claim already in the list of required claims");
         uint length = requiredClaims.length;
@@ -92,6 +125,9 @@ contract ComplyDeFi is IComplyDeFi, Ownable {
 
     }
 
+    /**
+     *  @dev See {IComplyDeFi-hasClaimTopic}.
+     */
     function hasClaimTopic(address _issuer, uint _claimTopic) public view override returns (bool) {
         uint length = trustedIssuerClaims[_issuer].length;
         uint[] memory claimTopics = trustedIssuerClaims[_issuer];
@@ -103,6 +139,9 @@ contract ComplyDeFi is IComplyDeFi, Ownable {
         return false;
     }
 
+    /**
+     *  @dev See {IComplyDeFi-isComply}.
+     */
     function isComply(address _user) public view override returns (bool) {
         address _identity = (IIdFactory(factory)).getIdentity(_user);
         // check that the identity was deployed by the factory, other identities are not allowed

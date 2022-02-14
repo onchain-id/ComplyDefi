@@ -13,7 +13,7 @@
     "index.d.ts"
   ],
   "scripts": {
-    "build": "truffle compile && truffle-flattener contracts/gooseComply/GooseComply.sol > build/GooseComply.sol && truffle-flattener contracts/factory/IdFactory.sol > build/IdFactory.sol && truffle-flattener contracts/gooseFinance/EggToken.sol > build/EggToken.sol",
+    "build": "truffle compile && truffle-flattener contracts/example/gooseComply/GooseComply.sol > build/GooseComply.sol && truffle-flattener contracts/factory/IdFactory.sol > build/IdFactory.sol && truffle-flattener contracts/example/gooseFinance/EggToken.sol > build/EggToken.sol",
     "coverage": "truffle run coverage",
     "test": "truffle test",
     "lint:js": "eslint \"test/*.js\"",

@@ -73,6 +73,8 @@ contract IdFactory is IIdFactory {
         return identity;
     }
 
+    /// function used to link a new wallet to an existing identity contract
+    /// function has to be called by the ONCHAINID owner, i.e. a wallet already linked to the contract
     function linkWallet(address _newWallet) public override {
         require(userIdentity[msg.sender] != address(0), "wallet not linked to an identity contract");
         address identity = userIdentity[msg.sender];
@@ -80,13 +82,18 @@ contract IdFactory is IIdFactory {
         emit WalletLinked(_newWallet, identity);
     }
 
+    /// function used to unlink a wallet from an identity contract
+    /// function has to be called by the ONCHAINID owner, i.e. a wallet already linked to the contract
+    /// cannot be called on msg.sender address to ensure there is always minimum 1 wallet linked to an ONCHAINID
     function unlinkWallet(address _oldWallet) public override {
+        require(_oldWallet != msg.sender, "cannot be called on sender address");
         require(userIdentity[msg.sender] == userIdentity[_oldWallet], "only a linked wallet can unlink");
         address _identity = userIdentity[_oldWallet];
         delete userIdentity[_oldWallet];
         emit WalletUnlinked(_oldWallet, _identity);
     }
 
+    /// getter function that returns the ONCHAINID contract address linked to a wallet
     function getIdentity(address _wallet) public override view returns (address) {
         return userIdentity[_wallet];
     }
