@@ -7,7 +7,7 @@ provides a very simple modifier that has to be added on the functions that requi
 caller of this function is eligible following the rules that the owner of the DeFi contract required. 
 
 ## How does it work? 
-ComplyDeFi uses several functions to work properly, these functions are defined hereunder :
+ComplyDeFi uses several concepts to work properly, these concepts are defined hereunder :
 
 ### ONCHAINID Factory
 First of all, the primary need of ComplyDeFi is to know who is managing the wallets interacting with the protocol, 
